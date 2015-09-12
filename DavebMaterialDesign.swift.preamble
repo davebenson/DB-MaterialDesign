@@ -1,0 +1,96 @@
+
+class DavebMaterialDesignView: UIView {
+    var strokeColor: UIColor? = nil {
+      didSet {
+        self.setNeedsDisplay()
+      }
+    }
+    var fillColor: UIColor? = nil {
+      didSet {
+        self.setNeedsDisplay()
+      }
+    }
+    var iconName: String = "clear" {
+      didSet {
+        self.setNeedsDisplay()
+      }
+    }
+    var iconSize: CGFloat? = nil {
+      didSet {
+        self.setNeedsDisplay()
+      }
+    }
+
+    var iconDrawArea: CGRect {
+        let f = self.frame
+        if let s = self.iconSize {
+            return CGRect(
+                x: f.origin.x + (f.size.width - s) / 2,
+                y: f.origin.y + (f.size.height - s) / 2,
+                width: s,
+                height: s
+            )
+        } else if f.size.width < f.size.height {
+            return CGRect(
+                x: 0,
+                y: (f.size.height - f.size.width) / 2,
+                width: f.size.width,
+                height: f.size.width
+            )
+        } else {
+            return CGRect(
+                x: (f.size.width - f.size.height) / 2,
+                y: 0,
+                width: f.size.height,
+                height: f.size.height
+            )
+        }
+    }
+
+
+    override func drawRect(rect: CGRect) {
+        let path = DavebMaterialDesign.pathsByName[iconName]
+        let target = self.iconDrawArea
+        let drawMode: CGPathDrawingMode = strokeColor != nil ? (fillColor != nil ? .FillStroke : .Stroke) : .Fill
+
+        let ctx = UIGraphicsGetCurrentContext()
+        CGContextPushGState (ctx)
+        CGContextScaleCTM (ctx, scale, scale)
+        CGContextTranslateCTM (ctx, target.origin.x, target.origin.y)
+        if let c = strokeColor {
+            CGContextSetStrokeColorWithColor (ctx, c.CGColor)
+        }
+        if let c = fillColor {
+            CGContextSetFillColorWithColor (ctx, c.CGColor)
+        }
+        CGContextAddPath (ctx, DavebMaterialDesign.getCGPathForName(self.iconName))
+        CGContextDrawPath (ctx, drawMode)
+        CGContextPopGState (ctx)
+    }
+}
+
+class DavebMaterialDesign {
+    class func getCGPathForName(name: String) -> CGPath! {
+        if let path = DavebMaterialDesign.pathsByName[name] {
+            return path
+        }
+        if let pc = DavebMaterialDesign.pathConstructorsByName[name] {
+            let path = CGPathCreateMutable()
+            pc(path)
+            let p2 = CGPathCreateCopy(path)
+            DavebMaterialDesign.pathsByName[name] = p2
+            return p2
+        } else {
+            assert(false)
+            return nil
+        }
+    }
+
+    // Cache of generated paths.
+    static private var pathsByName = [String: CGPath]()
+
+    static private let pathConstructorsByName: [String: (CGMutablePath) -> ()] = [
+
+    
+
+    // Machine-generated code follows.
